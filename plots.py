@@ -53,3 +53,51 @@ def plot_extensive_intensive(share_working, hours_if_work):
 
     plt.tight_layout()
     plt.show()
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+def plot_value_functions(model, i):
+    """
+    Plot value functions for working and not working
+    for a given index i over the asset grid.
+    """
+
+    a_grid = np.asarray(model.par.a_grid)
+    V_work = np.asarray(model.sol.V_work[i])
+    V_notwork = np.asarray(model.sol.V_notwork[i])
+
+    if not (a_grid.shape == V_work.shape == V_notwork.shape):
+        raise ValueError("Asset grid and value functions must have the same shape.")
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+
+    ax.plot(
+        a_grid,
+        V_work,
+        color="steelblue",
+        linewidth=2.5,
+        label="Value (working)"
+    )
+
+    ax.plot(
+        a_grid,
+        V_notwork,
+        color="indianred",
+        linewidth=2.5,
+        linestyle="dashed",
+        label="Value (not working)"
+    )
+
+    ax.set_xlabel("Assets")
+    ax.set_ylabel("Value")
+    ax.set_title(f"Value Functions, index = {i}")
+    ax.grid(True, axis="y", alpha=0.3)
+    ax.legend(frameon=False)
+
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+    plt.tight_layout()
+    plt.show()

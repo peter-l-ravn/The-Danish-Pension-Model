@@ -30,6 +30,7 @@ class ModelClass(EconModelClass):
         par.beta = 0.96
 
         par.h_max = 1
+        par.h_min = 0.1
 
         # simulation
         par.N_sim = 200
@@ -148,7 +149,7 @@ def value_function_inner(c, h, sol_V_work, sol_V_notwork, a, t, par):
     a_next = max_c - c
 
     sol_V_next = max(interp_1d(par.a_grid, sol_V_work[t+1, :], a_next), 
-                        interp_1d(par.a_grid, sol_V_notwork[t+1, :], a_next))
+                     interp_1d(par.a_grid, sol_V_notwork[t+1, :], a_next))
 
     return - (np.log(c+1e-5) - (h**2)/2 + par.beta*sol_V_next)
 
@@ -187,8 +188,8 @@ def solve_VFI(par, sol):
                 if par.labour_market_flexibility == 'flexible':
                     sol.h_work[t, a_idx] = optimizer(
                                 value_function_last_period,
-                                a=0.1,
-                                b=1,
+                                a=par.h_min,
+                                b=par.h_max,
                                 args=(a,t,par)
                     )
                 elif par.labour_market_flexibility == 'rigid':
@@ -208,8 +209,8 @@ def solve_VFI(par, sol):
 
                 if par.labour_market_flexibility == 'flexible':
                     sol.h_work[t, a_idx] = optimizer(value_function_VFI,
-                                            a=0.1,
-                                            b=1,
+                                            a=par.h_min,
+                                            b=par.h_max,
                                             args=(sol.V_work, sol.V_notwork, a, t, par)
                     )
                 elif par.labour_market_flexibility == 'rigid':
@@ -278,8 +279,8 @@ def solve_NVFI(par, sol):
                 if par.labour_market_flexibility == 'flexible':
                     sol.h_work[t, a_idx] = optimizer(
                                 value_function_last_period,
-                                a=0.1,
-                                b=1,
+                                a=par.h_min,
+                                b=par.h_max,
                                 args=(a,t,par)
                     )
                 elif par.labour_market_flexibility == 'rigid':
@@ -300,8 +301,8 @@ def solve_NVFI(par, sol):
 
                 if par.labour_market_flexibility == 'flexible':
                     sol.h_work[t, a_idx] = optimizer(value_function_NVFI,
-                                            a=0.1,
-                                            b=1,
+                                            a=par.h_min,
+                                            b=par.h_max,
                                             args=(sol.c_given_m, sol.V_work, sol.V_notwork, a, t, par)
                     )
                 elif par.labour_market_flexibility == 'rigid':
